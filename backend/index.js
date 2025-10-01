@@ -1,10 +1,15 @@
 const express = require('express');
 const app = express();
 
-const env = require("dotenv").config();
+const morgan = require("morgan");
 const cors = require("cors");
 
 const port = process.env.PORT || 8001
+
+
+
+require("dotenv").config();
+app.use(morgan("dev"))
 app.use(cors())
 
 app.get('/api', (req, res) => {
