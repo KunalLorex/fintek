@@ -1,38 +1,52 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const userAccessSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
         required: true,
-        minLength: 8,
-        maxLength: 15,
-        match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        message: "Password must be atleast least 8 character with one uppercase,lowercase,special character and the number"
+        validate: {
+            validator: function(v) {
+                // If password is already hashed (starts with $2a$), don't validate format
+                if (v.startsWith('$2a$')) {
+                    return true;
+                }
+                // Validate original password format before hashing
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(v);
+            },
+            message: "Password must be 8-15 characters with one uppercase, lowercase, special character and number"
+        }
     },
     role: {
         type: String,
         required: true,
         enum: ["admin", "super-admin", "mediator", "purchaser", "supplier", "customer", "individual"],
-        default: "individual",
-        message: "Role must be one of the following: admin, super-admin, mediator, purchaser, supplier, customer, individual"
+        default: "individual"
     },
     createdAt: {
-        type: DateTime,
-        default: Date.now()
+        type: Date,
+        default: Date.now
     },
     updatedAt: {
-        type: DateTime,
-        default: Date.now(),
-        onUpdate: Date.now()
+        type: Date,
+        default: Date.now
     }
 })
 
-userAccessSchema.pre('save', function (next) {
+userAccessSchema.pre('save', async function (next) {
+    // Only hash the password if it has been modified (and is not already hashed)
+    if (this.isModified('password') && !this.password.startsWith('$2a$')) {
+        const bcrypt = require('bcryptjs');
+        const saltRounds = 10;
+        this.password = await bcrypt.hash(this.password, saltRounds);
+    }
+    
     if (!this.createdAt) {
         this.createdAt = Date.now()
     }
@@ -49,4 +63,4 @@ userAccessSchema.pre('findOneAndUpdate', function (next) {
 
 const userAccessModel = mongoose.model('UserAccess', userAccessSchema);
 
-export default userAccessModel;
+module.exports = userAccessModel;

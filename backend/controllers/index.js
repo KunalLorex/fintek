@@ -1,5 +1,14 @@
-import authAccessController from "./AuthAccessController";
+const { AuthAccessController } = require("./AuthAccessController");
+const { registerUser, loginUser } = require("./AuthController");
+const { verifyToken, checkRole, getCurrentUser, updateUserProfile, logoutUser } = require("./AuthVerifierController");
 
-export {
-    authAccessController
-}
+module.exports = {
+    AuthAccessController,
+    registerUser,
+    loginUser,
+    verifyToken,
+    checkRole,
+    getCurrentUser,
+    updateUserProfile,
+    logoutUser
+};

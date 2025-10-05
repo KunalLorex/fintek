@@ -1,5 +1,5 @@
-import { LoginView } from "./LoginView";
+const { LoginView } = require("./LoginView");
 
-export {
+module.exports = {
     LoginView
-}
+};

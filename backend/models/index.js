@@ -1,5 +1,9 @@
-import userAccessModel from "./UserAccessModel";
+const userAccessModel = require("./UserAccessModel");
+const Theatre = require("./theatre");
+const Movie = require("./movie");
 
-export {
-    userAccessModel
-}
+module.exports = {
+    userAccessModel,
+    Theatre,
+    Movie
+};
