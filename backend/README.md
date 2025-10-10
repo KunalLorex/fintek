@@ -100,3 +100,5 @@ Authorization: Bearer <jwt-token>
 - `role` (String, required, enum)
 - `createdAt` (Date)
 - `updatedAt` (Date)
+
+in the respective .env file correct the password for the mongourl
